@@ -1,5 +1,8 @@
 Revision history for CGI-Application-Plugin-Config-General
 
+0.04    2005-01-30
+        - fixed some documentation errors
+
 0.03    2005-01-29
         - added missing prerequisites
 

@@ -24,17 +24,17 @@ CGI::Application::Plugin::Config::General - Add Config::General Support to CGI::
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
 =head2 Simple Access to Configuration
 
-In your CGI::Application-based module:
+In your L<CGI::Application>-based module:
 
     use base 'CGI::Application';
     use CGI::Application::Plugin::Config::General;
@@ -60,7 +60,7 @@ In your CGI::Application-based module:
         # get single config parameter
         my $value = $self->conf->param('some_value');
 
-        # get underlying Config::General object
+        # get underlying Config::General::Match object
         my $obj = $self->conf->obj;
     }
 
@@ -124,7 +124,7 @@ virtual-host:
 =head1 DESCRIPTION
 
 This module allows you to easily access configuration data stored in
-C<Config::General> (i.e. Apache-style) config files.
+L<Config::General> (i.e. Apache-style) config files.
 
 You can also automatically match configuration sections to the request
 URL, or to the module name.  This is similar to how Apache dynamically
@@ -139,7 +139,7 @@ multiple themes for a single application.
 
 =head2 Simple access to Configuration
 
-This module provides a C<conf> method to your C<CGI::Application>
+This module provides a C<conf> method to your L<CGI::Application>
 object.  First, you initialize the configuration system (typically in
 your C<cgiapp_init> method):
 
@@ -158,7 +158,7 @@ Then, within your run-modes you can retrieve configuration data:
 
     # get entire configuration (as a reference)
     my $conf = $self->conf->getall;
-    my $value = $conf{'some_value'};
+    my $value = $conf->{'some_value'};
 
     # get single config parameter
     my $value = $self->conf->param('some_value');
@@ -216,37 +216,7 @@ match.
 
 You can use name your sections something other than C<< <Site> >>, and
 you can use a different environment variable than C<SITE_NAME>.  See
-C<Notes on Site Matching>, below.
-
-=item <SiteMatch>
-
-Matches against the C<SITE_NAME> environment variable using a regular
-expression.
-
-    # httpd.conf
-    <VirtualHost _default_:8080>
-        SetEnv SITE_NAME REDSITE
-    </VirtualHost>
-
-    # in app.conf
-    <Site BLUESITE>
-        background = blue
-        foreground = white
-    </Site>
-
-    <Site REDSITE>
-        background = red
-        foreground = pink
-    </Site>
-
-    <Site GREENSITE>
-        background = darkgreen
-        foreground = lightgreen
-    </Site>
-
-You can use name your sections something other than C<< <Site> >>, and
-you can use a different environment variable than C<SITE_NAME>.  See
-C<Notes on Site Matching>, below.
+L<Notes on Site Matching>, below.
 
 =item <App>
 
@@ -261,19 +231,12 @@ using C<::> as a delimiter, instead of C</>.  The match is tied to the
 beginning of the package name, just like absolute paths.  For instance,
 given the section:
 
-    <App Admin>
+    <App Site::Admin>
         ...
     </App>
 
-the packages C<Admin> and C<Admin::Users> would match, but the packages
-C<Foo::Admin> and C<Administrative> would not.
-
-For instance,
-given the section:
-
-    <App Admin>
-        ...
-    </App>
+the packages C<Site::Admin> and C<Site::Admin::Users> would match, but
+the packages C<My::Site::Admin> and C<Site::Administrative> would not.
 
 =item <AppMatch>
 
@@ -281,12 +244,12 @@ Matches the package name of your application module, using a regular
 expression.  The expression is not tied to the start of the string.  For
 instance, given the section:
 
-    <AppMatch Admin>
+    <AppMatch Site::Admin>
         ...
     </AppMatch>
 
-The following packages would all match: C<Admin>, C<Admin::Users>,
-C<Foo::Admin>, C<Administrative>.
+The following packages would all match: C<Site::Admin>, C<Site::Admin::Users>,
+C<My::Site::Admin>, C<MySite::Admin>, C<Site::Administrative>.
 
 =item <Location>
 
@@ -302,8 +265,9 @@ The Location would be:
 
     /cgi-bin/category.cgi/fiction/
 
-This is obtained by calling the C<url> method of the query object
-(either C<CGI> or C<CGI::Simple>):
+Internally, the location is obtained by calling the C<url> method of the
+query object (which is usually either a L<CGI> or L<CGI::Simple>
+object):
 
     $path = $webapp->query->url('-absolute' => 1, '-path_info' => 1);
 
@@ -317,7 +281,7 @@ Matches against the request URI, using a regular expression.
 
 The sections are matched in the following order:
 
-    Site:         <Site>     and <SiteMatch>
+    Site:         <Site>
     Package Name: <App>      and <AppMatch>
     URL:          <Location> and <LocationMatch>
 
@@ -330,7 +294,7 @@ Values in sections matched later override the values in sections matched
 earlier.
 
 The idea is that the longer matches are more specific and should have
-priority.
+priority, and that URIs are more specific than Module names.
 
 =head2 Section Nesting
 
@@ -355,7 +319,7 @@ The sections can be nested inside each other.  For instance:
 
 
 By default, the sections can be nested up to two levels deep.  You can
-change this by setting the C<-NestingDepth> parameter to C<init>.
+change this by setting the L<-NestingDepth> parameter to L<init>.
 
 =head2 Merging Configuration Values into your Template
 
@@ -374,11 +338,7 @@ templates:
         title = "Manifest Destiny, Inc. - Contact Us"
     </Location>
 
-If you do this, you should consider keeping your database passwords and
-other sensitive data in a separate configuration file, in order to avoid
-accidentally leaking these data into your web pages.
-
-If you use C<HTML::Template>, you use the associate method when you load
+If you use L<HTML::Template>, you use the associate method when you load
 the template:
 
     $self->load_template(
@@ -386,7 +346,7 @@ the template:
         'associate' => $self->conf,
     );
 
-If you use C<Template::Toolkit> (via the C<CGI::Application::Plugin::TT>
+If you use L<Template::Toolkit> (via the L<CGI::Application::Plugin::TT>
 module), you can accomplish the same thing by providing a custom
 tt_pre_process method:
 
@@ -402,6 +362,13 @@ tt_pre_process method:
             }
         }
     }
+
+
+I<NOTE: If you plan to merge data directly from your config files to your>
+I<templates, you should consider keeping your database passwords and other>
+I<sensitive data in a separate configuration file, in order to avoid>
+I<accidentally leaking these data into your web pages.>
+
 
 =head1 METHODS
 
@@ -489,14 +456,14 @@ The path to the configuration file to be parsed.
 
 =item -Options
 
-Any additional C<Config::General::Match> options.  See the documentation
-to C<Config::General> and C<Config::General::Match> for more details.
+Any additional L<Config::General::Match> options.  See the documentation
+to L<Config::General> and L<Config::General::Match> for more details.
 
 =item -CacheConfigFiles
 
 Whether or not to cache configuration files.  Enabled, by default.
 This option is only really useful in a persistent environment such as
-C<mod_perl>.  See C<Config File Caching>, C<ADVANCED USAGE>,
+C<mod_perl>.  See L<Config File Caching> under L<ADVANCED USAGE>,
 below.
 
 =item -StatConfig
@@ -504,7 +471,7 @@ below.
 If config file caching is enabled, this option controls how often the
 config files are checked to see if they have changed.  The default is 60
 seconds.  This option is only really useful in a persistent environment
-such as C<mod_perl>.  See C<Config File Caching>,
+such as C<mod_perl>.  See L<Config File Caching> under
 C<ADVANCED USAGE>, below.
 
 =item -SiteSectionName
@@ -527,7 +494,7 @@ C<HTTP_HOST>, use:
 The number of levels deep that sections can be nested.  The default is
 two levels deep.
 
-See C<Section Nesting>, above.
+See L<Section Nesting>, above.
 
 =back
 
@@ -768,12 +735,12 @@ Gets the entire configuration as a hash or hashref:
 
 Note that the following two method calls will return different results:
 
-    my $config = $self->conf->getall;       # parsed config
-    my $config = $self->conf->obj->getall;  # raw config
+    my %config = $self->conf->getall;       # parsed config
+    my %config = $self->conf->obj->getall;  # raw config
 
 In the first case, the matching based on URI, Module, etc. has already
-been performed.  In the second case, you are accessing the raw config
-with all of the C<< <Location> >>, C<< <App> >>, etc. sections intact.
+been performed.  In the second case, you get the raw config with all of
+the C<< <Location> >>, C<< <App> >>, etc. sections intact.
 
 =cut
 
@@ -787,8 +754,8 @@ sub getall {
 
 Allows you to retrieve individual values from the configuration.
 
-It behvaves like the <param> method in other classes, such as C<CGI>,
-C<CGI::Application> and C<HTML::Template>:
+It behvaves like the C<param> method in other classes, such as L<CGI>,
+L<CGI::Application> and L<HTML::Template>:
 
     $value      = $self->conf->param('some_key');
     @all_keys   = $self->conf->param();
@@ -809,16 +776,17 @@ sub param {
 
 =head2 obj
 
-Provides access to the underlying Config::General::Match> object.
+Provides access to the underlying L<Config::General::Match> object.
 
 You can access the raw unparsed configuration data by calling
 
     my $config = $self->conf->obj->getall;  # raw config
 
-See the note under C<getall>, above.
+See the note under L<getall>, above.
 
 In future versions of this module, certain caching strategies may
-prevent you from accessing the underlying Config::General::Match object.
+prevent you from accessing the underlying L<Config::General::Match>
+object in certain situations.
 
 =cut
 
@@ -838,12 +806,12 @@ This is a class method which returns the current configuration object.
     print $db_conf{'username'};
 
 This method is most useful in situations where you don't have access to
-the C<CGI::Application> object, such within a C<Class::DBI> class.  See
-C<Access to Configuration information from another Class> for an example.
+the L<CGI::Application> object, such within a L<Class::DBI> class.  See
+L<Access to Configuration information from another Class> for an example.
 
-Note that C<get_current_config> returns the configuration hash (or
-hashref) directly.  It is the equivalent of calling
-C<< $self->conf->getall >>.
+Note that L<get_current_config> returns the configuration hash (or
+hashref) directly, and does not give you access to the object itself.
+It is the equivalent of calling C<< $self->conf->getall >>.
 
 =cut
 
@@ -907,12 +875,12 @@ If enough time has passed (sixty seconds by default) the config file is
 checked to see if it has changed.  If it has changed, then the file is
 reread.
 
-If you are using C<Config::General> version 2.28 or greater, then you
-can safely use the C<include> feature of C<Config::General> and all
+If you are using L<Config::General> version 2.28 or greater, then you
+can safely use the C<include> feature of L<Config::General> and all
 included files will be checked for changes along with the main file.
 
 To disable caching of config files pass a false value to the
-C<-CacheConfigFiles> parameter to init, e.g:
+L<-CacheConfigFiles> parameter to L<init>, e.g:
 
     $self->conf->init(
         -ConfigFile           => 'app.conf',
@@ -920,7 +888,7 @@ C<-CacheConfigFiles> parameter to init, e.g:
     );
 
 To change how often config files are checked for changes, change the
-value of the C<-StatConfig> paramter to init, e.g.:
+value of the L<-StatConfig> paramter to L<init>, e.g.:
 
     $self->conf->init(
         -ConfigFile => 'app.conf',
@@ -930,7 +898,7 @@ value of the C<-StatConfig> paramter to init, e.g.:
 =head3 PerlSetVar instead of SetEnv
 
 For a (slight) performance improvement, you can use C<PerlSetVar>
-instead of C<SetEnv> within a C< <<VirtualHost>> >:
+instead of C<SetEnv> within a C<< <VirtualHost> >>:
 
     # httpd.conf
     <VirtualHost _default_:8080>
@@ -942,10 +910,10 @@ instead of C<SetEnv> within a C< <<VirtualHost>> >:
 =head3 Renaming C<< <Site> >> or C<SITE_NAME>
 
 Normally, the environment variable C<SITE_NAME> is matched to
-C<< <Site> >> and C<< <SiteMatch> >> sections.
+C<< <Site> >> section.
 
-You can change these with the C<-SiteSectionName> and C<-SiteVar>
-parameters to C<init>:
+You can change these with the L<-SiteSectionName> and L<-SiteVar>
+parameters to L<init>:
 
     $self->conf->init(
         -ConfigFile           => 'app.conf',
@@ -953,8 +921,8 @@ parameters to C<init>:
         -SiteVar              => 'MY_HOST',
     );
 
-This will match the environment variable C<MY_HOST> to the sections
-C<< <Host> >> and C<< <HostMatch> >>.
+This will match the environment variable C<MY_HOST> to the C<< <Host> >>
+section.
 
 =head3 Setting C<SITE_NAME> from an C<.htaccess> file or the CGI script
 
@@ -979,7 +947,7 @@ Or even the calling CGI script:
 
 You can also get at the current configuration settings from a completely
 unrelated Perl module.  This can be useful for instance if you need to
-configure a set of C<Class::DBI> classes, and you want them to be able
+configure a set of L<Class::DBI> classes, and you want them to be able
 to pick up their configuration on their own.  For instance:
 
     # app.conf
@@ -1013,19 +981,19 @@ to pick up their configuration on their own.  For instance:
     }
 
 For this example to work, you need to make sure you call
-C<$self->conf->init> before you access the database through any of your
-C<Class::DBI> objects.
+C<< $self->conf->init >> before you access the database through any of your
+L<Class::DBI> objects.
 
-Note that C<get_current_config> returns the configuration hash (or
-hashref) directly.  is the equivalent of calling
-C<< $self->conf->getall >>.
+Note that L<get_current_config> returns the configuration hash (or
+hashref) directly, and does not give you access to the object itself.
+It is the equivalent of calling C<< $self->conf->getall >>.
 
-=head2 Changing Parsing Behaviour Using Custom C<-MatchSections>
+=head2 Changing Parsing Behaviour Using Custom L<-MatchSections>
 
-Internally, this module uses C<Config::General> and
-C<Config::General::Match> to parse its config files.  If you want to
-change the parsing behaviour, you can pass your own C<-MatchSections>
-list to C<init>.  For instance, if you want to allow only sections named
+Internally, this module uses L<Config::General> and
+L<Config::General::Match> to parse its config files.  If you want to
+change the parsing behaviour, you can pass your own L<-MatchSections>
+list to L<init>.  For instance, if you want to allow only sections named
 C<< <URL> >>, with no nesting, and have these matched exactly to the
 complete request path, you could do the following:
 
@@ -1060,7 +1028,7 @@ complete request path, you could do the following:
     );
 
 
-For reference, here is the default C<-MatchSections>:
+For reference, here is the default L<-MatchSections>:
 
     -MatchSections => [
         {
@@ -1143,15 +1111,18 @@ sub _default_matchsections {
 
 =pod
 
-For each section, the C<-SectionType> param indicates what runtime
+For each section, the L<-SectionType> param indicates what runtime
 variable the section will be matched against.  Here are the allowed values
 
     env:     matched to the environment variable SITE_NAME (overridden by -SiteNameVar)
     module:  name of the Perl Module handling this request (e.g. MyApp::Users)
     path:    path of the request, including path_info (e.g. /cgi-bin/myapp/users.cgi/some/path)
 
-You can use the above C<-SectionType> values in your own custom
-C<-MatchSection>.
+You can use the above L<-SectionType> values in your own custom
+L<-MatchSections>.
+
+For more information on the syntax of L<-MatchSections>, see the docs
+for L<Config::General::Match>.
 
 =head1 AUTHOR
 
@@ -1167,10 +1138,10 @@ be notified of progress on your bug as I make changes.
 =head1 ACKNOWLEDGEMENTS
 
 This module would not be possible without Thomas Linden's excellent
-C<Config::General> module.
+L<Config::General> module.
 
 Thanks to the excellent examples provided by the other
-C<CGI::Application> plugin authors:  Mark Stosberg, Michael Peters, Cees
+L<CGI::Application> plugin authors:  Mark Stosberg, Michael Peters, Cees
 Hek and others.
 
 =head1 SEE ALSO
@@ -1180,6 +1151,10 @@ Hek and others.
     Config::General::Match
     CGI::Application::Plugin::Config::Simple
     CGI::Application::Plugin::ConfigAuto
+
+    CGI::Application::Plugin::TT
+    Template::Toolkit
+    HTML::Template
 
 =head1 COPYRIGHT & LICENSE
 
