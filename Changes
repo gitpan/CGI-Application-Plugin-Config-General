@@ -1,0 +1,13 @@
+Revision history for CGI-Application-Plugin-Config-General
+
+0.03    2005-01-29
+        - added missing prerequisites
+
+0.02    2005-01-29
+        - added some more tests to increase coverage
+        - Changed to Module::Build
+        - first CPAN release
+
+0.01    2005-01-27
+        - First version
+
