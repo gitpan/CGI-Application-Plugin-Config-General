@@ -24,11 +24,11 @@ CGI::Application::Plugin::Config::General - Add Config::General Support to CGI::
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
@@ -419,7 +419,7 @@ sub _new {
 
     my $class = ref $proto || $proto;
 
-    my ($package) = caller(1);  # find package of caller to 'conf' method
+    my ($package) = ref $webapp;
 
     my $self = {
         '__CONFIG_NAME'        => $conf_name,
@@ -1166,4 +1166,3 @@ under the same terms as Perl itself.
 =cut
 
 1;
-

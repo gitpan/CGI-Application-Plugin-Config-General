@@ -1,5 +1,11 @@
 Revision history for CGI-Application-Plugin-Config-General
 
+0.05    2005-03-08
+        - fixed the strategy used to determine the module name - now you
+          can initialize the config object method in a superclass of the
+          web application, but App and AppMatch will still correctly
+          match on the package name of the actual web application.
+
 0.04    2005-01-30
         - fixed some documentation errors
 
