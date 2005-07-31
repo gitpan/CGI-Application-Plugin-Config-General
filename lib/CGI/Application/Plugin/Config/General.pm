@@ -12,6 +12,7 @@ use Config::General::Match;
 use Carp;
 use File::Spec;
 use Scalar::Util qw(weaken isweak);
+use Cwd;
 
 use vars '@EXPORT';
 @EXPORT = qw(conf);
@@ -24,11 +25,16 @@ CGI::Application::Plugin::Config::General - Add Config::General Support to CGI::
 
 =head1 VERSION
 
-Version 0.05
+Version 0.07
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.07';
+
+=head1 NOTE
+
+This module is obsolete and has now been superceded by
+L<CGI::Application::Plugin::Config::Context>.
 
 =head1 SYNOPSIS
 
@@ -550,6 +556,7 @@ sub init {
 
     # Build the C::G::M object if we haven't retrieved it from the cache
     if (!$cg_obj) {
+        # print STDERR "$self->{'__CALLERS_PACKAGE'} did not retrieve from cache\n";
 
         # Add -MatchSections if not provided
         unless ($options->{'-MatchSections'}) {
@@ -570,7 +577,6 @@ sub init {
         if ($cache_config_files) {
 
             my @config_files = ($config_file);
-
 
             $self->_cgm_cache_store($config_file, $cg_obj, $self->{'__CONFIG_OBJ_CREATED'});
         }
@@ -624,7 +630,7 @@ our %CGM_Cache;
 sub _cgm_cache_retrieve {
     my ($self, $config_file) = @_;
 
-    my $abs_path = File::Spec->rel2abs($config_file);
+    my $abs_path = Cwd::abs_path($config_file);
 
     return $CGM_Cache{$abs_path}->{'__OBJ'};
 }
@@ -635,7 +641,7 @@ sub _cgm_cache_store {
     my ($self, $config_file, $cg_obj, $creation_time) = @_;
 
     my @config_files = ($config_file);
-    my $abs_path = File::Spec->rel2abs($config_file);
+    my $abs_path = Cwd::abs_path($config_file);
 
     # Config::General 2.28 and higher can give a list of files it has read,
     # including included files
@@ -681,7 +687,7 @@ sub _cgm_cache_check_valid {
     my ($self, $config_file, $stat_config) = @_;
 
     my @config_files = ($config_file);
-    my $abs_path = File::Spec->rel2abs($config_file);
+    my $abs_path = Cwd::abs_path($config_file);
 
     return unless exists $CGM_Cache{$abs_path};
     return unless ref    $CGM_Cache{$abs_path}{'__FILES'} eq 'ARRAY';
@@ -871,6 +877,10 @@ under mod_perl:
 
 By default each config file is read only once when the conf object is
 first initialized.  Thereafter, on each init, the cached config is used.
+
+This means that in a persistent environment like mod_perl, the config
+file is parsed on the first request, but not on subsequent requests.
+
 If enough time has passed (sixty seconds by default) the config file is
 checked to see if it has changed.  If it has changed, then the file is
 reread.
@@ -894,6 +904,17 @@ value of the L<-StatConfig> paramter to L<init>, e.g.:
         -ConfigFile => 'app.conf',
         -StatConfig => 1, # check the config file every second
     );
+
+
+Internally the configuration cache is implemented by a hash, keyed by
+the absolute path of the configuration file.  This means that if you have
+two web applications that use the same configuration file, they will use
+the same cache.
+
+This would only matter if you wanted to use different C<Config::General>
+or C<Config::General::Match> options for different applications running
+in the same process that use the same config file.
+
 
 =head3 PerlSetVar instead of SetEnv
 

@@ -1,5 +1,16 @@
 Revision history for CGI-Application-Plugin-Config-General
 
+0.07    2005-07-30
+        - added pointer to CGI::Application::Plugin::Config::Context,
+          which supercedes this module
+        - minor documentation fixes
+
+0.06    2005-03-15 (unreleased)
+        - added some docs regarding the file caching system
+        - improved performance of the caching system by switching
+          from File::Spec->rel2abs() to Cwd::abs_path()
+          (seems the former uses Cwd::cwd which spawns /bin/pwd)
+
 0.05    2005-03-08
         - fixed the strategy used to determine the module name - now you
           can initialize the config object method in a superclass of the

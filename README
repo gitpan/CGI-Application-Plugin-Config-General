@@ -3,7 +3,11 @@ NAME
     to CGI::Application
 
 VERSION
-    Version 0.03
+    Version 0.07
+
+NOTE
+    This module is obsolete and has now been superceded by
+    CGI::Application::Plugin::Config::Context.
 
 SYNOPSIS
   Simple Access to Configuration
@@ -449,6 +453,10 @@ ADVANCED USAGE
    Config File Caching
     By default each config file is read only once when the conf object is
     first initialized. Thereafter, on each init, the cached config is used.
+
+    This means that in a persistent environment like mod_perl, the config
+    file is parsed on the first request, but not on subsequent requests.
+
     If enough time has passed (sixty seconds by default) the config file is
     checked to see if it has changed. If it has changed, then the file is
     reread.
@@ -472,6 +480,15 @@ ADVANCED USAGE
             -ConfigFile => 'app.conf',
             -StatConfig => 1, # check the config file every second
         );
+
+    Internally the configuration cache is implemented by a hash, keyed by
+    the absolute path of the configuration file. This means that if you have
+    two web applications that use the same configuration file, they will use
+    the same cache.
+
+    This would only matter if you wanted to use different "Config::General"
+    or "Config::General::Match" options for different applications running
+    in the same process that use the same config file.
 
    PerlSetVar instead of SetEnv
     For a (slight) performance improvement, you can use "PerlSetVar" instead

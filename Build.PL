@@ -12,7 +12,7 @@ my $builder = Module::Build->new(
         'CGI::Application'       => 0,
         'Config::General::Match' => 0,
         'Scalar::Util'           => 0,
-    },                                
+    },
     add_to_cleanup      => [ 'CGI-Application-Plugin-Config-General-*' ],
     create_makefile_pl  => 'traditional',
 );
