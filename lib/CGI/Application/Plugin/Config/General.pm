@@ -25,11 +25,11 @@ CGI::Application::Plugin::Config::General - Add Config::General Support to CGI::
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NOTE
 
@@ -1147,7 +1147,7 @@ for L<Config::General::Match>.
 
 =head1 AUTHOR
 
-Michael Graham, C<< <mag-perl@occamstoothbrush.com> >>
+Michael Graham, C<< <mgraham@cpan.org> >>
 
 =head1 BUGS
 
@@ -1164,6 +1164,10 @@ L<Config::General> module.
 Thanks to the excellent examples provided by the other
 L<CGI::Application> plugin authors:  Mark Stosberg, Michael Peters, Cees
 Hek and others.
+
+=head1 SOURCE
+
+The source code repository for this module can be found at http://github.com/mgraham/CAP-Config-General
 
 =head1 SEE ALSO
 

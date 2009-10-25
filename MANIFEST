@@ -1,13 +1,17 @@
+.cvsignore
+.gitignore
 Build.PL
 Changes
-MANIFEST
-META.yml # Will be created by "make dist"
-Makefile.PL
-README
 lib/CGI/Application/Plugin/Config/General.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+misc/dist
+misc/makedocs.pl
+misc/style.css
+README
+style.css
 t/00.load.t
-t/pod.t
-t/pod-coverage.t
 t/01-vivify-conf.t
 t/02-init.t
 t/03-path.t
@@ -19,6 +23,7 @@ t/08-get_current_config.t
 t/09-custom-matchsections.t
 t/10-param.t
 t/11-file-caching.t
+t/12-subclass.t
 t/conf/02-init1.conf
 t/conf/02-init2.conf
 t/conf/03-path.conf
@@ -27,3 +32,6 @@ t/conf/05-site.conf
 t/conf/06-multiple-matches.conf
 t/conf/07-nested.conf
 t/conf/09-custom-matchsections.conf
+t/conf/12-module.conf
+t/pod-coverage.t
+t/pod.t

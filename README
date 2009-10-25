@@ -3,7 +3,7 @@ NAME
     to CGI::Application
 
 VERSION
-    Version 0.07
+    Version 0.08
 
 NOTE
     This module is obsolete and has now been superceded by
@@ -553,6 +553,7 @@ ADVANCED USAGE
             </options>
         </database>
 
+
         # In your Class::DBI subclass
         package My::Class::DBI::Base;
         use base 'Class::DBI';
@@ -597,6 +598,7 @@ ADVANCED USAGE
         <URL /cgi-bin/user.cgi>
             user_area = 1
         </URL>
+
 
         # in your cgiapp_init:
         $self->conf->init(
@@ -664,7 +666,7 @@ ADVANCED USAGE
     Config::General::Match.
 
 AUTHOR
-    Michael Graham, "<mag-perl@occamstoothbrush.com>"
+    Michael Graham, "<mgraham@cpan.org>"
 
 BUGS
     Please report any bugs or feature requests to
@@ -679,6 +681,10 @@ ACKNOWLEDGEMENTS
 
     Thanks to the excellent examples provided by the other CGI::Application
     plugin authors: Mark Stosberg, Michael Peters, Cees Hek and others.
+
+SOURCE
+    The source code repository for this module can be found at
+    http://github.com/mgraham/CAP-Config-General
 
 SEE ALSO
         CGI::Application

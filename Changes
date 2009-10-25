@@ -1,5 +1,14 @@
 Revision history for CGI-Application-Plugin-Config-General
 
+0.08    2009-10-25
+        - fixed test that broke due to change introduced into CGI.pm 
+          version 3.11.  (RT #19758).
+
+        - Changes of interest to module maintainers only:
+          - switched to using MANIFEST.SKIP
+          - fixed the makedocs script to work with more recent pod2html
+          - source repo now on github: http://github.com/mgraham/CAP-Config-General
+
 0.07    2005-07-30
         - added pointer to CGI::Application::Plugin::Config::Context,
           which supercedes this module
